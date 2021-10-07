@@ -252,3 +252,58 @@ sync_map:
   - name: '{member.uid}'
     parent: ldap_roles
     options: LOGIN
+
+- description: "Query LDAP for DB-wide read right."
+  ldap:
+    base: ou=roles,dc=georchestra,dc=org
+    filter: "(&(objectClass=groupOfMembers)(cn=PGSQL_READ_ALL))"
+    join:
+      member:
+        filter: "(&(objectClass=georchestraUser)(uid=*))"
+  roles:
+  - name: '{member.uid}'
+    parents:
+    - ldap_roles
+    - readers
+    options: LOGIN
+
+- description: "Query LDAP for DB-wide publish right."
+  ldap:
+    base: ou=roles,dc=georchestra,dc=org
+    filter: "(&(objectClass=groupOfMembers)(cn=PGSQL_PUBLISH_ALL))"
+    join:
+      member:
+        filter: "(&(objectClass=georchestraUser)(uid=*))"
+  roles:
+  - name: '{member.uid}'
+    parents:
+    - ldap_roles
+    - publishers
+    options: LOGIN
+
+- description: "Query LDAP for DB-wide write right."
+  ldap:
+    base: ou=roles,dc=georchestra,dc=org
+    filter: "(&(objectClass=groupOfMembers)(cn=PGSQL_WRITE_ALL))"
+    join:
+      member:
+        filter: "(&(objectClass=georchestraUser)(uid=*))"
+  roles:
+  - name: '{member.uid}'
+    parents:
+    - ldap_roles
+    - writers
+    options: LOGIN
+
+- description: "Query LDAP for SUPERUSER right."
+  ldap:
+    base: ou=roles,dc=georchestra,dc=org
+    filter: "(&(objectClass=groupOfMembers)(cn=PGSQL_SUPERUSER))"
+    join:
+      member:
+        filter: "(&(objectClass=georchestraUser)(uid=*))"
+  roles:
+  - name: '{member.uid}'
+    parents:
+    - ldap_roles
+    options: LOGIN SUPERUSER

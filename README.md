@@ -48,6 +48,12 @@ Allowed chunks:
   - WRITER: the user is actually an owner of the schema (as defined by default in ldap2pg), meaning he can create tables and other objects and insert/update data.
 
 
+Four additional database-wide roles are supported in the default ldap2pg config:
+- PGSQL_READ_ALL: grants read access to all tables in all schemas
+- PGSQL_PUBLISH_ALL: grants insert/update  for all tables in all schemas
+- PGSQL_WRITE_ALL: grants ddl on all tables in all schemas. Actually some kind of superuser
+- PGSQL_SUPERUSER: grants superuser profile (should not be needed, most likely PGSQL_WRITE_ALL is enough)
+
 
 ### Run the sync
 
