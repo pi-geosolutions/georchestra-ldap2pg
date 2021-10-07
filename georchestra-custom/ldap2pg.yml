@@ -56,7 +56,7 @@ color: yes
 postgres:
   # Use env vars instead: see https://ldap2pg.readthedocs.io/en/latest/cli/#environment-variables
   #dsn: "host=192.168.1.70 port=5432 user=georchestra dbname=georchestra"
-  #dsn: postgres://georchestra:geo@192.168.1.70:5434/georchestra
+  # dsn: postgres://georchestra:geo@192.168.1.70:5434/georchestra
   databases_query: |
     SELECT datname
     FROM pg_catalog.pg_database
@@ -151,13 +151,13 @@ sync_map:
     - ldap_roles
     - readers
     options: NOLOGIN
-  - name: writers
+  - name: publishers
     # Grant reading to writers
     parent: readers
     options: NOLOGIN
-  - name: owners
+  - name: writers
     # Grant read/write to owners
-    parent: writers
+    parent: publishers
     options: NOLOGIN
 
   grant:
@@ -165,14 +165,14 @@ sync_map:
     role: readers
     schemas: __all__
   - privilege: rw
-    role: writers
+    role: publishers
     schema: __all__
   - privilege: ddl
-    role: owners
+    role: writers
     schema: __all__
 
 
-- description: "Query LDAP to create schemas _readers, _writers and _owners."
+- description: "Query LDAP to create schemas _readers, _publishers and _writers."
   ldap:
     base: ou=roles,dc=georchestra,dc=org
     filter: "(cn=PGSQL_SCHEMA_*)"
@@ -180,25 +180,25 @@ sync_map:
   - name: '{cn.regex()}_readers'
     parent: ldap_roles
     options: NOLOGIN
-  - name: '{cn.regex()}_writers'
+  - name: '{cn.regex()}_publishers'
     parents:
     - ldap_roles
     - '{cn.regex()}_readers'
     options: NOLOGIN
-  - name: '{cn.regex()}_owners'
+  - name: '{cn.regex()}_writers'
     parents:
     - ldap_roles
-    - '{cn.regex()}_writers'
+    - '{cn.regex()}_publishers'
     options: NOLOGIN
   grant:
   - privilege: ro
     role: '{cn.regex()}_readers'
     schema: "{cn.regex()}"
   - privilege: rw
-    role: '{cn.regex()}_writers'
+    role: '{cn.regex()}_publishers'
     schema: "{cn.regex()}"
   - privilege: ddl
-    role: '{cn.regex()}_owners'
+    role: '{cn.regex()}_writers'
     schema: "{cn.regex()}"
 
 - description: "Query LDAP for [schema]_readers profiles."
@@ -214,6 +214,25 @@ sync_map:
     options: NOLOGIN
     member: '{member.uid}'
   - name: '{member.uid}'
+    parent: ldap_roles
+    options: LOGIN
+
+- description: "Query LDAP for [schema]_publishers profiles."
+  ldap:
+    base: ou=roles,dc=georchestra,dc=org
+    filter: "(&(objectClass=groupOfMembers)(cn=PGSQL_SCHEMA_*_PUBLISHER))"
+    join:
+      member:
+        filter: "(&(objectClass=georchestraUser)(uid=*))"
+  roles:
+  - name: '{cn.regex()}_publishers'
+    parents:
+    - ldap_roles
+    - '{cn.regex()}_readers'
+    options: NOLOGIN
+    member: '{member.uid}'
+  - name: '{member.uid}'
+    parent: ldap_roles
     options: LOGIN
 
 - description: "Query LDAP for [schema]_writers profiles."
@@ -225,19 +244,11 @@ sync_map:
         filter: "(&(objectClass=georchestraUser)(uid=*))"
   roles:
   - name: '{cn.regex()}_writers'
-    parent: '{cn.regex()}_readers'
+    parents:
+    - ldap_roles
+    - '{cn.regex()}_publishers'
     options: NOLOGIN
     member: '{member.uid}'
   - name: '{member.uid}'
-    options: LOGIN
-
-- description: "Query LDAP for [schema]_owners profiles."
-  ldap:
-    base: ou=roles,dc=georchestra,dc=org
-    filter: "(&(objectClass=groupOfMembers)(cn=PGSQL_SCHEMA_*_PUBLISHER))"
-    join:
-      member:
-        filter: "(&(objectClass=georchestraUser)(uid=*))"
-  roles:
-  - name: '{member.uid}'
+    parent: ldap_roles
     options: LOGIN
