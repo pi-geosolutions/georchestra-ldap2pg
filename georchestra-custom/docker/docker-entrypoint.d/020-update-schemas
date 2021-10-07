@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+# Load file_env script to allow passing sensitive data through secrets
+# e.g. LDAPPASSWORD_FILE will be used to feed LDAPPASSWORD with the content
+# of the file pointed by LDAPPASSWORD_FILE
+source /docker-entrypoint.d/utils/file_env.sh
+file_env 'LDAPPASSWORD'
+file_env 'PGPASSWORD'
+
+# Run the script that will synchronize the schemas in the DB, from the LDAP records
+python3 /ldap2pg/georchestra-custom/src/main.py
