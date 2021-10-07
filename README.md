@@ -106,3 +106,7 @@ The default config is the georchestra-custom/ldap2pg.yml file. In the docker ima
 To override it, the easiest way is to mount a /workspace volume, in which will be your ldap2pg.yml alternative file. See https://ldap2pg.readthedocs.io/en/latest/config/#file-location
 
 If you feel like playing with configuration, let's have a look at https://ldap2pg.readthedocs.io/en/latest/config/.
+
+
+## Aknowledgements
+We thank [Dalibo](https://github.com/dalibo) for this nice piece of software that is ldap2pg. Thank you, [bersace](https://github.com/bersace) for helping me out at figuring how the ldap2pg config works.
