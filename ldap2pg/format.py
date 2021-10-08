@@ -323,19 +323,8 @@ class FormatValue(object):
             return getattr(self.value, name[:-2])()
         elif name == 'regex()':
             return self.regex(self.value)
-        elif name == 'schema()':
-            return self.extract_schema_from_ldap_role(self.value)
         else:
             raise AttributeError(name)
-
-    def extract_schema_from_ldap_role(self, ldap_role):
-        import re
-        ldap_role_regex ='^PGSQL_SCHEMA_([A-Z-_]+)_(READER|WRITER|PUBLISHER)$'
-        tokens = re.search(ldap_role_regex, ldap_role)
-        if not tokens:
-            return ''
-        schema_name = tokens.group(1).lower()
-        return schema_name
 
     def regex(self, value):
         import re
