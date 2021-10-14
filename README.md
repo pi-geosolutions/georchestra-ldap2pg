@@ -103,7 +103,7 @@ This is all very configurable if you feel like a rebel. There are mostly 2 place
 #### LDAP_ROLE_REGEX environment variable
 
 You can change the default regular expression applied on the console roles. The default value is
-`LDAP_ROLE_REGEX="^PGSQL_SCHEMA_([A-Z-_]+)_(READER|WRITER|PUBLISHER)$"`
+`LDAP_ROLE_REGEX="^PGSQL_SCHEMA_([A-Z][A-Z0-9-_]+)_(READER|WRITER|PUBLISHER)$"`
 If you change it, you will probably need to adjust the ldap2pg.yml config file too
 
 #### ldap2pg.yml

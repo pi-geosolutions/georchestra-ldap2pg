@@ -22,7 +22,7 @@ log.addHandler(handler)
 # Load some config from ENV vars
 ldap_uri = environ.get('LDAPURI', 'ldap://192.168.1.70:3389')
 baseDN=environ.get('LDAPBASEDN','dc=georchestra,dc=org')
-ldap_role_regex = environ.get('LDAP_ROLE_REGEX','^PGSQL_SCHEMA_([A-Z-_]+)_(READER|WRITER|PUBLISHER)$')
+ldap_role_regex = environ.get('LDAP_ROLE_REGEX','^PGSQL_SCHEMA_([A-Z][A-Z0-9-_]+)_(READER|WRITER|PUBLISHER)$')
 search_base = 'ou=users,{}'.format(baseDN)
 ldapadmin_passwd = fileenv('LDAPPASSWORD', fallback='ldapadmin_pwd')
 pg_dsn = environ.get('PGDSN', 'postgres://georchestra@192.168.1.70:5434/georchestra')

@@ -329,7 +329,7 @@ class FormatValue(object):
     def regex(self, value):
         import re
         from os import environ
-        ldap_role_regex = environ.get('LDAP_ROLE_REGEX','^PGSQL_SCHEMA_([A-Z-_]+)_(READER|WRITER|PUBLISHER)$')
+        ldap_role_regex = environ.get('LDAP_ROLE_REGEX','^PGSQL_SCHEMA_([A-Z][A-Z0-9-_]+)_(READER|WRITER|PUBLISHER)$')
         tokens = re.search(ldap_role_regex, value)
         if not tokens:
             return ''
