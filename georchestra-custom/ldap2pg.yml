@@ -193,7 +193,9 @@ sync_map:
   grant:
   - privilege: ro
     role: '{cn.regex()}_readers'
-    schema: "{cn.regex()}"
+    schemas:
+      - "{cn.regex()}"
+      - "public"
   - privilege: rw
     role: '{cn.regex()}_publishers'
     schema: "{cn.regex()}"
@@ -213,6 +215,7 @@ sync_map:
     parent: ldap_roles
     options: NOLOGIN
     member: '{member.uid}'
+    comment: "Can access objects on {cn.regex()} schema (read-only)"
   - name: '{member.uid}'
     parent: ldap_roles
     options: LOGIN
@@ -231,6 +234,7 @@ sync_map:
     - '{cn.regex()}_readers'
     options: NOLOGIN
     member: '{member.uid}'
+    comment: "Can edit (insert, update) objects on {cn.regex()} schema (but not create new ones)"
   - name: '{member.uid}'
     parent: ldap_roles
     options: LOGIN
@@ -249,6 +253,7 @@ sync_map:
     - '{cn.regex()}_publishers'
     options: NOLOGIN
     member: '{member.uid}'
+    comment: "Can read, edit (insert, update) and create objects on {cn.regex()} schema"
   - name: '{member.uid}'
     parent: ldap_roles
     options: LOGIN
