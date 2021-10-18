@@ -3,6 +3,7 @@
 .coverage
 .pytest_cache/
 __pycache__/
+.idea
 build/
 dist/
 docker-compose.override.yml

@@ -99,9 +99,13 @@ def main():
             log.info("Create schemas: {}".format(', '.join(missing_schemas)))
             if not dry_mode:
                 for sch in missing_schemas:
-                    q = 'CREATE SCHEMA IF NOT EXISTS "{}";'.format(sch)
-                    cur.execute(q)
-                pg_conn.commit()
+                    try:
+                        q = 'CREATE SCHEMA IF NOT EXISTS "{}";'.format(sch)
+                        cur.execute(q)
+                    except psycopg2.Error as e:
+                        log.error("Unexpected error: {}".format(e))
+                        cur.execute("ROLLBACK")
+
 
         # Remove deprecated schemas (if empty)
         deprecated_schemas = set(pg_schemas) - set(ldap_schemas)
@@ -109,9 +113,16 @@ def main():
             log.info("Delete schemas (if empty): {}".format(', '.join(deprecated_schemas)))
             if not dry_mode:
                 for sch in deprecated_schemas:
-                    q = 'DROP SCHEMA IF EXISTS "{}" RESTRICT;'.format(sch)
-                    cur.execute(q)
-                pg_conn.commit()
+                    try:
+                        q = 'DROP SCHEMA IF EXISTS "{}" RESTRICT;'.format(sch)
+                        cur.execute(q)
+                    except psycopg2.Error as e:
+                        if "cannot drop schema" in str(e):
+                            log.warning("Could not drop the schema {} (probably not empty)".format(sch));
+                        else:
+                            log.error("Unexpected error: {}".format(e));
+                            
+                        cur.execute("ROLLBACK")
 
     log.info("schemas up-to-date")
 
